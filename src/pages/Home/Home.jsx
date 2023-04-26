@@ -1,9 +1,10 @@
 import "./Home.css";
+import banner from "../../assets/images/banner-home.png"
 
 export function Home() {
   return (
     <div className="home">
-      <h2>home</h2>
+      <img className="w-100" src={banner} alt="SoulPet Banner" />
     </div>
   );
 };
