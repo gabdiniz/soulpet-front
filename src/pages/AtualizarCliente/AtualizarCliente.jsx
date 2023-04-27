@@ -1,28 +1,38 @@
+import axios from "axios";
+import { useEffect } from "react";
+import { Button, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { Button, Form } from "react-bootstrap"; import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-export function NovoCliente() {
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate = useNavigate();
+export function AtualizarCliente() {
+
+  const { id } = useParams();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const  navigate  = useNavigate();
+
+  useEffect(() => {
+    axios.get(`http://localhost:3001/clientes/${id}`).then(cliente => {
+      reset(cliente.data);
+    }).catch((e) => {
+      toast.error(e.response.data.message, { position: "left-right", duration: 2000 });
+    });
+  }, [id, reset]);
 
   function onSubmit(data) {
-    axios.post("http://localhost:3001/clientes", data)
-      .then(response => {
-        toast.success(`Cliente cadastrado. Id: ${response.data.id}`, { position: "left-right", duration: 2000 });
-        navigate("/clientes")
-      })
-      .catch(error => {
-        toast.error("Ocorreu um erro.", { position: "left-right", duration: 2000 });
-      });
-  }
+    axios.put(`http://localhost:3001/clientes/${id}`, data).then(response => {
+      toast.success(response.data.message, { position: "left-right", duration: 2000 });
+      navigate("/clientes")
+    }).catch(e => {
+      toast.error(e.response.data.message, { position: "left-right", duration: 2000 });
+    });
+  };
 
   return (
     <div className="novo-cliente container mt-5">
       <div className="d-flex justify-content-between align-items-center">
-        <h1>Adicionar cliente</h1>
+        <h1>Atualizar cliente</h1>
         <Button as={Link} to="/clientes">Clientes</Button>
       </div>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -76,9 +86,9 @@ export function NovoCliente() {
         </Form.Group>
 
         <div className="d-flex flex-row-reverse">
-          <Button variant="primary" type="submit">Cadastrar</Button>
+          <Button variant="primary" type="submit">Editar</Button>
         </div>
       </Form>
     </div>
   );
-};
+}
